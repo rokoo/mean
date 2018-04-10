@@ -21,7 +21,6 @@ exports.create = function (req, res) {
         message: errorHandler.getErrorMessage(err)
       });
     } else {
-      
       res.json(article);
     }
   });
@@ -95,17 +94,9 @@ exports.list = function (req, res) {
     }
   });
   knex('atp_players')
-  .where('player_id', '101736')
-  .then(res => console.log(res));
-  Article.find().sort('-created').populate('user', 'displayName').exec(function (err, articles) {
-    if (err) {
-      return res.status(422).send({
-        message: errorHandler.getErrorMessage(err)
-      });
-    } else {
-      console.log(articles);
-      res.json(articles);
-    }
+  .limit(10)
+  .then(function(obj) {
+      res.json(obj);
   });
 };
 
