@@ -12,12 +12,21 @@ module.exports = function (app) {
     .get(players.list)
     .post(players.create);
 
+    app.route('/api/boys')
+    .get(players.list)
+    .post(players.create);
+
   // Single article routes
   app.route('/api/players/:playerId')
     .get(players.read)
     .put(players.update)
     .delete(players.delete);
+    app.param('playerId', players.playersByRange);
+
+    app.route('/api/country/players/:country')
+    .get(players.read);
+
 
   // Finish by binding the article middleware
-  app.param('playerId', players.articleByID);
+  app.param('country', players.playerByCountry);
 };

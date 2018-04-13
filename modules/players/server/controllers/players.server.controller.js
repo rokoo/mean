@@ -123,3 +123,46 @@ exports.articleByID = function (req, res, next, id) {
     next();
   });
 };
+
+/**
+ * Article middleware
+ */
+exports.playersByRange = function (req, res, next, id) {
+  var knex = require('knex')({
+    client: 'mysql',
+    connection: {
+      host : '127.0.0.1',
+      port: '3306',
+      user : 'root',
+      password : 'mysql',
+      database : 'atp'
+    },
+    pool: { min: 0, max: 7
+    }
+  });
+  knex('atp_players')
+  .limit(5)
+  .then(function(obj) {
+      res.json(obj);
+  });
+};
+
+exports.playerByCountry = function (req, res, next, country) {
+  var knex = require('knex')({
+    client: 'mysql',
+    connection: {
+      host : '127.0.0.1',
+      port: '3306',
+      user : 'root',
+      password : 'mysql',
+      database : 'atp'
+    },
+    pool: { min: 0, max: 7
+    }
+  });
+  knex('atp_players').where('country',country)
+  .limit(5)
+  .then(function(obj) {
+      res.json(obj);
+  });
+};
