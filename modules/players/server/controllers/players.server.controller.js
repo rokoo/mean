@@ -166,3 +166,45 @@ exports.playerByCountry = function (req, res, next, country) {
       res.json(obj);
   });
 };
+
+exports.matchesByTourney = function (req, res, next, tourneyId) {
+  var knex = require('knex')({
+    client: 'mysql',
+    connection: {
+      host : '127.0.0.1',
+      port: '3306',
+      user : 'root',
+      password : 'mysql',
+      database : 'atp'
+    },
+    pool: { min: 0, max: 7
+    }
+  });
+  knex('atp_matches_2016').where('tourney_name','Australian Open')
+  .then(function(rows) {
+    var arr = [];
+    rows.forEach(element => {
+        var obj = new Object;
+        obj.round = element.round;
+        obj.winner = element.winner_name;
+        obj.loser = element.loser_name;
+      });
+  }).then(function(objects) {
+    var obj = new Object;
+    obj.name = 'flare';
+    objects.forEach(match => {
+      if(match.round =='F') {
+        obj.name = match.winner;
+        objects.forEach(matchsf =>{
+          var sf = [];
+          if(matchsf.round == 'SF') {
+            var sfMatch  = new Object;
+            sfMatch.name = matchsf.winner_name;
+            sf.append(sfMatch);
+          }
+        });
+        obj.children = sf;
+      }
+    })
+  });
+};
