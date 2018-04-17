@@ -29,4 +29,8 @@ module.exports = function (app) {
 
   // Finish by binding the article middleware
   app.param('country', players.playerByCountry);
+
+  app.route('/api/matches/:tourney')
+    .get(players.read);
+    app.param('tourney', players.matchesByTourney);
 };

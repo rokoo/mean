@@ -188,23 +188,40 @@ exports.matchesByTourney = function (req, res, next, tourneyId) {
         obj.round = element.round;
         obj.winner = element.winner_name;
         obj.loser = element.loser_name;
+        obj.name = element.winner_name;
+        arr.push(obj);
       });
-  }).then(function(objects) {
-    var obj = new Object;
-    obj.name = 'flare';
-    objects.forEach(match => {
-      if(match.round =='F') {
-        obj.name = match.winner;
-        objects.forEach(matchsf =>{
-          var sf = [];
-          if(matchsf.round == 'SF') {
-            var sfMatch  = new Object;
-            sfMatch.name = matchsf.winner_name;
-            sf.append(sfMatch);
+    return arr;
+  }).then(function(matches) {
+    var rounds = ['F', 'SF', 'QF','R16','R32','R64','R128'];
+    var roundMatches = [];
+    rounds.forEach(round => {
+      var matchRound = [];
+      matches.forEach(match => {
+        if(match.round == round) {
+          matchRound.push(match);
+        }
+      });
+      roundMatches.push(matchRound);
+    });
+    return roundMatches;
+  }).then(function(roundMatches) {
+    while(roundMatches.length > 1) {
+      var roundMatchesNode = roundMatches.pop();
+      var roundMatchesParent = roundMatches.pop();
+      roundMatchesParent.forEach(parentMatch => {
+        parentMatch.children = [];
+        roundMatchesNode.forEach(nodeMatch => {
+          if(parentMatch.winner == nodeMatch.winner || parentMatch.loser == nodeMatch.winner) {
+            parentMatch.children.push(nodeMatch);
           }
         });
-        obj.children = sf;
-      }
-    })
+      });
+      roundMatches.push(roundMatchesParent);
+    }
+    return roundMatches.pop();
+  }).then(function(obj) {
+    // console.log(JSON.stringify(obj));
+    res.json(obj);
   });
 };
